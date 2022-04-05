@@ -9,6 +9,8 @@ import queue
 from struct import *
 from protocol import *
 import time
+from database import *
+from datetime import *
 
 class management_system(QMainWindow):
     def __init__(self):
@@ -44,6 +46,33 @@ class management_system(QMainWindow):
         self.timerMutex = QMutex()
         self.styleMutex = QMutex()
         self.mutexalive = QMutex()
+
+        self.conn = sqlite3.connect("dbTest.db", check_same_thread=False)
+        self.cur = self.conn.cursor()
+        self.cur.execute("DROP TABLE alive")
+        self.conn.commit()
+        self.cur.execute("DROP TABLE acq_data")
+        self.conn.commit()
+        self.conn = sqlite3.connect("dbTest.db", check_same_thread=False)
+        self.cur = self.conn.cursor()
+        self.cur.execute(query.sql_alive_create)
+        self.conn.commit()
+        self.cur.execute(query.sql_acq_data_create)
+        self.conn.commit()    
+
+    @pyqtSlot(int)
+    def dbMain(self, value):
+        udata = self.acq_dataQueue.get()
+        sdata = unpack(STRUCT_CID_ACQ_DATA_REP, udata)
+        self.ID = sdata[2].decode('utf-8')
+        self.intID = int(self.ID)
+        current = datetime.now()
+        self.cur.execute(query.sql_acq_data_insert, (current, self.intID, sdata[4], sdata[5], sdata[6], sdata[8],
+                                                     sdata[9], sdata[10], sdata[11], sdata[12], sdata[13],
+                                                     sdata[14], sdata[15], sdata[16], sdata[17], sdata[18],
+                                                     sdata[19], sdata[20], sdata[21], sdata[22], sdata[23],
+                                                     sdata[24], sdata[25], sdata[26], sdata[27]))
+        self.conn.commit()
 
     @pyqtSlot(int)
     def stySheet(self, value):

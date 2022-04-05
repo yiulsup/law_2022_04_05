@@ -21,18 +21,9 @@ class database(QThread):
         super(database, self).__init__()
         self.flex_recv_parser = flex_recv_parser
         self.parent = parent
-    def run(self):
-        self.conn = sqlite3.connect("dbTest.db", check_same_thread=False)
-        self.cur = self.conn.cursor()
-        self.cur.execute("DROP TABLE alive")
-        self.conn.commit()
-        self.cur.execute("DROP TABLE acq_data")
-        self.conn.commit()
-        self.conn = sqlite3.connect("dbTest.db", check_same_thread=False)
-        self.cur = self.conn.cursor()
-        self.cur.execute(query.sql_alive_create)
-        self.conn.commit()
-        self.cur.execute(query.sql_acq_data_create)
-        self.conn.commit()
 
-        while True: pass
+    def run(self):
+        
+        while True: 
+            
+            

@@ -7,6 +7,7 @@ import asyncio
 
 class eth_recv(QThread):
     image_signal = pyqtSignal(int)
+    data_signal = pyqtSignal(int)
     def __init__(self, parent, conn, eth):
         super(eth_recv, self).__init__()
         self.parent = parent
@@ -29,6 +30,7 @@ class eth_recv(QThread):
 
             elif self.raw[0] == 0x04 and self.raw[1] == 0x11:
                 self.parent.acq_dataQueue.put(self.raw)
+                self.data_signal.emit(1)
             self.eth_recv_mutex.unlock()
 
         self.eth_recv_mutex.unlock()
